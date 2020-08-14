@@ -15,8 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputLayout;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -96,14 +94,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
     @SuppressLint({"MissingSuperCall", "SetTextI18n"})
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case SOLICITA_ATIVACAO:
                 if (resultCode == Activity.RESULT_OK) {
@@ -117,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
             case SOLICITA_CONEXAO:
                 if (resultCode == Activity.RESULT_OK) {
                     MAC = data.getExtras().getString(ListaDispositivos.ENDRECO_MAC);
-                    //Toast.makeText(getApplicationContext(), "MAC: " + MAC, Toast.LENGTH_LONG).show();
 
                     meuDevice = meuBluetooth.getRemoteDevice(MAC);
 
@@ -135,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
                     } catch (IOException erro) {
                         conexao = false;
-                        Toast.makeText(getApplicationContext(), "Erro de conexão" + erro, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Erro de conexão", Toast.LENGTH_LONG).show();
                     }
 
                 } else {
@@ -147,14 +141,12 @@ public class MainActivity extends AppCompatActivity {
     private class ConnectedThread extends Thread {
         private InputStream mmInStream;
         private OutputStream mmOutStream;
-        private byte[] mmBuffer; // mmBuffer store for the stream
+        private byte[] mmBuffer;
 
         public ConnectedThread(BluetoothSocket socket) {
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
-            // Get the input and output streams; using temp objects because
-            // member streams are final.
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
@@ -182,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
         }
 
-        // Call this from the main activity to send data to the remote device.
         public void write(String dados_enviar) {
             byte[] msgBuffer = dados_enviar.getBytes();
             try {

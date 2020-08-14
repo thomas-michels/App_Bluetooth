@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Set;
 
@@ -44,11 +43,7 @@ public class ListaDispositivos extends ListActivity {
         super.onListItemClick(l, v, position, id);
 
         String informacaoGeral = ((TextView) v).getText().toString();
-
-        //Toast.makeText(getApplicationContext(), "Info: " + informacaoGeral, Toast.LENGTH_LONG).show();
-
         String enderecoMac = informacaoGeral.substring(informacaoGeral.length() - 17);
-
         Intent retornaMac = new Intent();
         retornaMac.putExtra(ENDRECO_MAC, enderecoMac);
 
