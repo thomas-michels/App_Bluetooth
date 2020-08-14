@@ -1,5 +1,6 @@
 package com.example.testbluetooth;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -9,7 +10,10 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +31,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int SOLICITA_ATIVACAO = 1;
     private static final int SOLICITA_CONEXAO = 2;
+    private static final int MESSAGE_READ = 3;
+
     ConnectedThread connectThread;
+
+    Handler mHandler;
+    StringBuilder dadosBluetooth = new StringBuilder();
 
     BluetoothAdapter meuBluetooth = null; // Bluetooth
     BluetoothDevice meuDevice = null;     // Dispositivo Conectado
@@ -94,6 +103,37 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mHandler = new Handler() {
+            @SuppressLint("HandlerLeak")
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                if (msg.what == MESSAGE_READ) {
+                    String recebidos = (String) msg.obj;
+
+                    dadosBluetooth.append(recebidos);
+
+                    int fimInformacao = dadosBluetooth.indexOf("}"); // } caractere definido como fim da informação
+
+                    if (fimInformacao > 0) {
+                        String dadosCompletos = dadosBluetooth.substring(0, fimInformacao);
+
+                        int tamInformacao = dadosCompletos.length();
+
+                        if (dadosBluetooth.charAt(0) == '{') { // { caractere definido como inicio da informação
+                            String dadosFinais = dadosBluetooth.substring(1, tamInformacao);
+
+                            //Log.d("Recebidos", dadosFinais); // Print
+                            Toast.makeText(getApplicationContext(), "Dados recebidos: " + dadosFinais, Toast.LENGTH_LONG).show();
+                        }
+
+                        dadosBluetooth.delete(0, dadosBluetooth.length());
+                    }
+                }
+            }
+        };
     }
 
     @SuppressLint({"MissingSuperCall", "SetTextI18n"})
@@ -160,18 +200,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void run() {
-            mmBuffer = new byte[1024];
-            int numBytes; // bytes returned from read()
+            byte[] buffer = new byte[1024];
+            int bytes; // bytes returned from read()
 
-//            // Keep listening to the InputStream until an exception occurs.
-//            while (true) {
-//                try {
-//                    // Read from the InputStream.
-//                    numBytes = mmInStream.read(mmBuffer);
-//                } catch (IOException e) {
-//                    break;
-//                }
-//            }
+            // Keep listening to the InputStream until an exception occurs.
+            while (true) {
+                try {
+                    bytes = mmInStream.read(buffer);
+
+                    String dadosBt = new String(buffer, 0, bytes);
+
+                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, dadosBt).sendToTarget();
+                } catch (IOException e) {
+                    break;
+                }
+            }
         }
 
         public void write(String dados_enviar) {
