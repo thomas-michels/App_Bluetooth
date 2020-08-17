@@ -61,4 +61,15 @@
         android:layout_height="wrap_content"
         android:text="Enviar Comando" />
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="23dp" />
+
+    <TextView
+        android:id="@+id/lbl_texto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dados recebidos"
+        android:textSize="18sp" />
+
 </LinearLayout>

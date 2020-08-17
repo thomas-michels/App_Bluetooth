@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button btnConectar, btnEnviar;
     EditText tf_comandos;
+    TextView lbl_texto;
 
     private static final int SOLICITA_ATIVACAO = 1;
     private static final int SOLICITA_CONEXAO = 2;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         btnConectar = (Button)findViewById(R.id.btnConectar);
         btnEnviar = (Button)findViewById(R.id.btnEnviar);
         tf_comandos = (EditText)findViewById(R.id.tf_comandos);
+        lbl_texto = (TextView)findViewById(R.id.lbl_texto);
 
         meuBluetooth = BluetoothAdapter.getDefaultAdapter();
 
@@ -105,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mHandler = new Handler() {
-            @SuppressLint("HandlerLeak")
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -126,7 +128,8 @@ public class MainActivity extends AppCompatActivity {
                             String dadosFinais = dadosBluetooth.substring(1, tamInformacao);
 
                             //Log.d("Recebidos", dadosFinais); // Print
-                            Toast.makeText(getApplicationContext(), "Dados recebidos: " + dadosFinais, Toast.LENGTH_LONG).show();
+                            lbl_texto.setText(dadosFinais);
+                            connectThread.write(("Reenviando dados: " + dadosFinais));
                         }
 
                         dadosBluetooth.delete(0, dadosBluetooth.length());
